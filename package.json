@@ -6,5 +6,24 @@
     "better-sqlite3": "^7.6.2",
     "cors": "^2.8.5",
     "express": "^4.18.1"
-  }
+  },
+  "name": "hoxton-node-one-to-many",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/teodoragjini/hoxton-node-one-to-many.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/teodoragjini/hoxton-node-one-to-many/issues"
+  },
+  "homepage": "https://github.com/teodoragjini/hoxton-node-one-to-many#readme",
+  "description": ""
 }

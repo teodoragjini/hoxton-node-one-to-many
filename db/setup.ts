@@ -61,6 +61,7 @@ dropAllWorks.run()
 const dropAllMuseum = db.prepare(`
 DROP TABLE IF  EXISTS museums`)
 dropAllMuseum.run()
+
 const createMuseumsTable = db.prepare(`
  CREATE TABLE IF NOT EXISTS museums (
     id INTEGER NOT NULL,
@@ -74,10 +75,10 @@ const createMuseumsTable = db.prepare(`
 createMuseumsTable.run()
 
 const creatMuseum = db.prepare(`
-INSERT INTO museums (name,city) VALUES (?,?)`)
+INSERT INTO museums (name,city) VALUES (@name, @city)`)
 
 for (let museum of museums){
-    creatMuseum.run(museum.name, museum.city)
+    creatMuseum.run(museum)
 }
 
 
@@ -95,8 +96,8 @@ CREATE TABLE IF NOT EXISTS works (
 createWorksTable.run()
 
 const createWork = db.prepare(`
-INSERT INTO works (name, pictures,museumId) VALUES(?,?,?)`)
+INSERT INTO works (name, pictures,museumId) VALUES(@name,@pictures,@museumId)`)
 
 for (let work of works){
-    createWork.run(work.name, work.pictures , work.museumId)
+    createWork.run(work)
 }
