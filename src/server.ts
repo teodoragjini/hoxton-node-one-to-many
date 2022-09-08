@@ -36,6 +36,14 @@ INSERT INTO museums (name,city) VALUES (@name, @city)`);
 const createWork = db.prepare(`
 INSERT INTO works (name, pictures,museumId) VALUES (@name,@pictures,@museumId)`);
 
+const deletWork = db.prepare(`
+DELETE FROM works WHERE id = @id
+`);
+
+const deleteWorkMuseum = db.prepare(`
+ DELETE FROM museums WHERE museumId= @museumId
+`);
+
 app.get("/museums", (req, res) => {
   const museums = getMuseums.all();
 
@@ -129,14 +137,24 @@ app.post("/works", (req, res) => {
       work.museum = museum;
       res.send(work);
     } else {
-      res
-        .status(400)
-        .send({
-          error: "You are creating a work for an museum that does not exist.",
-        });
+      res.status(400).send({
+        error: "You are creating a work for an museum that does not exist.",
+      });
     }
   } else {
     res.status(400).send({ errors });
+  }
+});
+
+app.delete("/works/:id", (req, res) => {
+  const id = req.params.id;
+  deleteWorkMuseum.run(id);
+  const info = deletWork.run(id);
+
+  if (info.changes > 0) {
+    res.status(404).send({ error: "Work not found!" });
+  } else {
+    res.send({ message: "Work deleted!" });
   }
 });
 
