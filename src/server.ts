@@ -28,7 +28,13 @@ SELECT * FROM works;
 
 const getWorkById = db.prepare(`
  SELECT * FROM works WHERE id = @id
-`)
+`);
+
+const creatMuseum = db.prepare(`
+INSERT INTO museums (name,city) VALUES (@name, @city)`);
+
+const createWork = db.prepare(`
+INSERT INTO works (name, pictures,museumId) VALUES (@name,@pictures,@museumId)`);
 
 app.get("/museums", (req, res) => {
   const museums = getMuseums.all();
@@ -53,6 +59,28 @@ app.get("/museums/:id", (req, res) => {
   }
 });
 
+app.post("/museums", (req, res) => {
+  let errors: string[] = [];
+
+  if (typeof req.body.name !== "string") {
+    errors.push("Name not given or not a string!");
+  }
+
+  if (typeof req.body.city !== "string") {
+    errors.push("City not given or not a string!");
+  }
+
+  if (errors.length === 0) {
+    const info = creatMuseum.run(req.body);
+    const museum = getMuseumById.get({ id: info.lastInsertRowid });
+    const works = getWorksForMuseums.all({ museumId: museum.id });
+    museum.works = works;
+    res.send(museum);
+  } else {
+    res.status(400).send({ errors });
+  }
+});
+
 app.get("/works", (req, res) => {
   const works = getWorks.all();
 
@@ -65,16 +93,51 @@ app.get("/works", (req, res) => {
 });
 
 app.get("/works/:id", (req, res) => {
-    const work = getWorkById.get(req.params);
+  const work = getWorkById.get(req.params);
 
-    if (work) {
-        const museum = getMuseumById.all({ id: work.museumId });
-        work.museum = museum;
-    
-        res.send(work);
-      } else {
-        res.status(404).send({ error: "Museum not found!" });
-      }
+  if (work) {
+    const museum = getMuseumById.all({ id: work.museumId });
+    work.museum = museum;
+
+    res.send(work);
+  } else {
+    res.status(404).send({ error: "Museum not found!" });
+  }
+});
+
+app.post("/works", (req, res) => {
+  let errors: string[] = [];
+
+  if (typeof req.body.name !== "string") {
+    errors.push("Name not given or not a string!");
+  }
+
+  if (typeof req.body.pictures !== "string") {
+    errors.push("Pictures not given or not a string!");
+  }
+
+  if (typeof req.body.museumId !== "number") {
+    errors.push("MuseumId not given or not a number!");
+  }
+
+  if (errors.length === 0) {
+    const museum = getMuseumById.get({ id: req.body.museumId });
+    if (museum) {
+      const info = createWork.run(req.body);
+      const work = getWorkById.get({ id: info.lastInsertRowid });
+
+      work.museum = museum;
+      res.send(work);
+    } else {
+      res
+        .status(400)
+        .send({
+          error: "You are creating a work for an museum that does not exist.",
+        });
+    }
+  } else {
+    res.status(400).send({ errors });
+  }
 });
 
 app.listen(port, () => {
