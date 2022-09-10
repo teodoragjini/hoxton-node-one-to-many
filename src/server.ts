@@ -40,9 +40,9 @@ const deletWork = db.prepare(`
 DELETE FROM works WHERE id = @id
 `);
 
-const deleteWorkMuseum = db.prepare(`
- DELETE FROM museums WHERE museumId= @museumId
-`);
+// const deleteWorkMuseum = db.prepare(`
+//  DELETE FROM museums WHERE museumId= @museumId
+// `);
 
 app.get("/museums", (req, res) => {
   const museums = getMuseums.all();
@@ -146,17 +146,17 @@ app.post("/works", (req, res) => {
   }
 });
 
-app.delete("/works/:id", (req, res) => {
-  const id = req.params.id;
-  deleteWorkMuseum.run(id);
-  const info = deletWork.run(id);
+// app.delete("/works/:id", (req, res) => {
+//   const id = req.params.id;
+//   deleteWorkMuseum.run(id);
+//   const info = deletWork.run(id);
 
-  if (info.changes > 0) {
-    res.status(404).send({ error: "Work not found!" });
-  } else {
-    res.send({ message: "Work deleted!" });
-  }
-});
+//   if (info.changes > 0) {
+//     res.status(404).send({ error: "Work not found!" });
+//   } else {
+//     res.send({ message: "Work deleted!" });
+//   }
+// });
 
 app.listen(port, () => {
   console.log(`Running: htpp://localhost:${port}`);
